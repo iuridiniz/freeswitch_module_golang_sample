@@ -57,9 +57,3 @@ void _stream_write_function(switch_stream_handle_t *stream, char *msg)
 {
     stream->write_function(stream, msg);
 }
-
-// switch _add_api()
-
-// SWITCH_ADD_API(api_interface, "skel", "Skel API", skel_function, "syntax");
-
-// static switch_status_t skel_function ( const char *cmd, switch_core_session_t *session, switch_stream_handle_t *stream)
