@@ -1,5 +1,5 @@
 # freeswitch_module_golang_sample
-Sample module for freeswitch using golang
+Sample module for [FreeSWITCH](https://github.com/signalwire/freeswitch) using golang
 
 
 ## tl; dr
