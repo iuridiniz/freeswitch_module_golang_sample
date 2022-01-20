@@ -41,7 +41,11 @@ func (_ _Log) Notice(format string, a ...interface{}) {
 //export _ModuleLoad
 func _ModuleLoad(module_interface *C.switch_loadable_module_interface_t) C.switch_status_t {
 	Load()
-	return C.SWITCH_STATUS_SUCCESS
+	/*
+		BUG: Go shared library cannot be unloaded.
+		see: https://github.com/golang/go/issues/11100
+	*/
+	return C.SWITCH_STATUS_NOUNLOAD
 }
 
 //export _ModuleRuntime
@@ -50,11 +54,6 @@ func _ModuleRuntime() C.switch_status_t {
 	return C.SWITCH_STATUS_TERM
 }
 
-/*
-  BUG: Go shared library cannot be unloaded.
-  see: https://github.com/golang/go/issues/11100
-  "I think all sufficiently sophisticated Go shared library will not be unloadable."
-*/
 //export _ModuleShutdown
 func _ModuleShutdown() C.switch_status_t {
 	Shutdown()

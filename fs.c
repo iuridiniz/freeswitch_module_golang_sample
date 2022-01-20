@@ -2,7 +2,7 @@
 #include "fs.h"
 #include "_cgo_export.h"
 
-/* these are declared in _cgo_export.h and defined in fs.go */
+/* these are declared in _cgo_export.h and defined in mod_hello_world.go */
 // switch_status_t _ModuleRuntime();
 // switch_status_t _ModuleShutdown();
 // switch_status_t _ModuleLoad();
