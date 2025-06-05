@@ -52,3 +52,8 @@ freeswitch@localhost> load mod_hello_world
 freeswitch@localhost> hello golang
 ```
 
+## File Descriptions
+
+- **fs.c**: Contains C helper functions for interacting with FreeSWITCH.
+- **fs.h**: Header file for `fs.c`, defining the interface for the C helper functions.
+- **mod_hello_world.go**: The main Go source file for the FreeSWITCH module, containing the module's logic and interaction points with FreeSWITCH.
