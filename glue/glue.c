@@ -49,5 +49,5 @@ void _log_on_channel(switch_log_level_t level, const char *file, const char *fun
 /* Calling C function pointers is currently not supported by cgo */
 void _stream_write_function(switch_stream_handle_t *stream, char *msg)
 {
-    stream->write_function(stream, msg);
+    stream->write_function(stream, "%s", msg);
 }
