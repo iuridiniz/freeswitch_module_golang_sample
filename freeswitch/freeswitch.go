@@ -31,11 +31,17 @@ type Stream struct {
 }
 
 // Write sends a message to the FreeSWITCH console.
+//
+// Uses zero-C-allocation strings: appends a NUL terminator on the Go side and passes
+// a pointer to the Go string's backing array to C, avoiding malloc/free round trips.
+// This is safe because _stream_write_function formats the string synchronously into
+// the stream's buffer (does not retain the pointer after the call returns); cgo
+// ensures the Go string is kept alive and unmoved for the duration of the C call.
+// For comparison, the old idiom (C.CString + defer C.free) allocated on the C heap
+// and performed cleanup after each call — only needed if C code retained the pointer.
 func (s Stream) Write(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
-	c_msg := C.CString(msg)
-	defer C.free(unsafe.Pointer(c_msg))
-	C._stream_write_function(s.c_stream, c_msg)
+	msg := fmt.Sprintf(format, a...) + "\x00"
+	C._stream_write_function(s.c_stream, (*C.char)(unsafe.Pointer(unsafe.StringData(msg))))
 }
 
 // Session is a placeholder for future session-related functionality.
@@ -60,17 +66,28 @@ func callerInfo(skip int) (file, fn string, line int) {
 }
 
 // Notice logs messages with the NOTICE severity level.
+//
+// Uses zero-C-allocation strings: appends a NUL terminator and passes pointers
+// to Go string backing arrays to C, avoiding malloc/free round trips. This is safe
+// because _log_on_channel formats the message synchronously (does not retain the
+// pointers after the call returns); cgo ensures each string is kept alive and
+// unmoved for the duration of the C call.
+// For comparison, the old idiom (C.CString + defer C.free per string) allocated
+// on the C heap and performed three cleanup operations per log call — only needed
+// if C code retained the pointers (e.g., queued for async processing).
 func (_ _Log) Notice(format string, a ...interface{}) {
-	msg := fmt.Sprintf(format, a...)
+	msg := fmt.Sprintf(format, a...) + "\x00"
 	file, fn, line := callerInfo(2) // skip: callerInfo, Notice -> lands on the caller of Notice
-	c_msg := C.CString(msg)
-	c_file := C.CString(file)
-	c_func := C.CString(fn)
-	defer C.free(unsafe.Pointer(c_msg))
-	defer C.free(unsafe.Pointer(c_file))
-	defer C.free(unsafe.Pointer(c_func))
+	fileNull := file + "\x00"
+	fnNull := fn + "\x00"
 
-	C._log_on_channel(C.SWITCH_LOG_NOTICE, c_file, c_func, C.int(line), c_msg)
+	C._log_on_channel(
+		C.SWITCH_LOG_NOTICE,
+		(*C.char)(unsafe.Pointer(unsafe.StringData(fileNull))),
+		(*C.char)(unsafe.Pointer(unsafe.StringData(fnNull))),
+		C.int(line),
+		(*C.char)(unsafe.Pointer(unsafe.StringData(msg))),
+	)
 }
 
 // Module is the interface a consumer (package main) must implement and register with
