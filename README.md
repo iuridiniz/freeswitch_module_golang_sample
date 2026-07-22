@@ -54,7 +54,7 @@ freeswitch@localhost> hello golang
 
 ## File Descriptions
 
-- **glue/glue.c**: C glue — `SWITCH_MODULE_DEFINITION` and the wrapper functions that call into Go.
-- **glue/glue.h**: Header file for `glue.c`, declaring the C helper functions used by the glue layer.
-- **glue/glue.go**: The only Go file using cgo. Contains all FreeSWITCH↔Go plumbing: the `//export`ed entry points, the `Module` interface, `Register()`, and the `Stream`/`Session`/`Log` wrappers passed to your module.
-- **mod_hello_world.go**: Pure module logic — no cgo. Implements the `glue.Module` interface (`Load`/`Runtime`/`Shutdown`/`ApiHandler`) and registers itself via `glue.Register()`. Edit this file to build your own module.
+- **freeswitch/freeswitch.c**: C glue — `SWITCH_MODULE_DEFINITION` and the wrapper functions that call into Go.
+- **freeswitch/freeswitch.h**: Header file for `freeswitch.c`, declaring the C helper functions used by the glue layer.
+- **freeswitch/freeswitch.go**: The only Go file using cgo. Contains all FreeSWITCH↔Go plumbing: the `//export`ed entry points, the `Module` interface, `Register()`, and the `Stream`/`Session`/`Log` wrappers passed to your module.
+- **mod_hello_world.go**: Pure module logic — no cgo. Implements the `freeswitch.Module` interface (`Load`/`Runtime`/`Shutdown`/`ApiHandler`) and registers itself via `freeswitch.Register()`. Edit this file to build your own module.

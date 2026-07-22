@@ -9,7 +9,7 @@ FREESWITCH_MOD_DIR ?= $(FREESWITCH_DIR)/mod
 CFLAGS ?= -I$(FREESWITCH_INCLUDE_DIR)
 LDFLAGS ?= -L$(FREESWITCH_LIB_DIR) -lfreeswitch -Wl,-rpath=$(FREESWITCH_LIB_DIR)
 
-mod_hello_world.so: $(wildcard *.go *.c *.h glue/*.go glue/*.c glue/*.h) go.mod
+mod_hello_world.so: $(wildcard *.go *.c *.h freeswitch/*.go freeswitch/*.c freeswitch/*.h) go.mod
 	CGO_CFLAGS="$(CGO_CFLAGS) $(CFLAGS)" \
 	CGO_LDFLAGS="$(CGO_LDFLAGS) $(LDFLAGS)" \
 		$(GO_BINARY) build -buildmode=c-shared -o $@

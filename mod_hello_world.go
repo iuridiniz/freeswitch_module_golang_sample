@@ -3,17 +3,17 @@
 // and provides a basic API command handler.
 //
 // All FreeSWITCH↔Go plumbing (cgo, //export entry points, C shims) lives in the
-// glue package (see glue/glue.go); this file contains only module logic and has no
+// freeswitch package (see freeswitch/freeswitch.go); this file contains only module logic and has no
 // dependency on cgo. To build your own module from this sample, edit this file.
 package main
 
-import "example.com/freeswitch_mod_hello_world/glue"
+import "example.com/freeswitch_mod_hello_world/freeswitch"
 
-// helloModule implements glue.Module and holds this sample's module logic.
+// helloModule implements freeswitch.Module and holds this sample's module logic.
 type helloModule struct{}
 
 func init() {
-	glue.Register(helloModule{})
+	freeswitch.Register(helloModule{})
 }
 
 func main() {} //No Op
@@ -22,27 +22,27 @@ func main() {} //No Op
 // It's a good place to perform initialization tasks,
 // such as registering API commands or event handlers.
 func (helloModule) Load() {
-	glue.Log.Notice("Hello World!\n")
+	freeswitch.Log.Notice("Hello World!\n")
 }
 
 // Runtime is called after the module has been loaded and is ready to run.
 // This function can be used for long-running tasks or event loops.
 // In this example, it simply logs a message.
 func (helloModule) Runtime() {
-	glue.Log.Notice("Ruling the World!\n")
+	freeswitch.Log.Notice("Ruling the World!\n")
 }
 
 // Shutdown is called when the module is being unloaded by FreeSWITCH.
 // It's a good place to perform cleanup tasks,
 // such as releasing resources or unregistering handlers.
 func (helloModule) Shutdown() {
-	glue.Log.Notice("Good bye World!\n")
+	freeswitch.Log.Notice("Good bye World!\n")
 }
 
 // ApiHandler is called when an API command registered by this module is executed.
 // cmd: The API command string.
 // session: The FreeSWITCH session, if the command was executed from within a call.
 // stream: The FreeSWITCH stream handle, used for sending output back to the caller.
-func (helloModule) ApiHandler(cmd string, session glue.Session, stream glue.Stream) {
+func (helloModule) ApiHandler(cmd string, session freeswitch.Session, stream freeswitch.Stream) {
 	stream.Write("Hello from api handler: %s\n", cmd)
 }

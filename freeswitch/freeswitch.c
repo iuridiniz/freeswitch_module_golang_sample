@@ -1,8 +1,8 @@
-#include <switch.h>
-#include "glue.h"
+#include "freeswitch.h"
 #include "_cgo_export.h"
+#include <switch.h>
 
-/* these are declared in _cgo_export.h and defined in glue.go */
+/* these are declared in _cgo_export.h and defined in freeswitch.go */
 // switch_status_t _ModuleRuntime();
 // switch_status_t _ModuleShutdown();
 // switch_status_t _ModuleLoad();

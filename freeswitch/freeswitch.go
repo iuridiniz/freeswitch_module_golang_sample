@@ -1,21 +1,21 @@
-// Package glue contains all the FreeSWITCH↔Go plumbing (cgo, //export entry points,
+// Package freeswitch contains all the FreeSWITCH↔Go plumbing (cgo, //export entry points,
 // C shims) required to build this sample as a FreeSWITCH module. It is the only
 // package in this project that uses cgo.
 //
 // Interaction with FreeSWITCH:
 //   - The package uses CGo to interface with FreeSWITCH's C API.
 //   - Exported C functions (_ModuleLoad, _ModuleRuntime, _ModuleShutdown, _ModuleApiHandler)
-//     serve as entry points for FreeSWITCH to call into Go, via glue.c.
+//     serve as entry points for FreeSWITCH to call into Go, via freeswitch.c.
 //   - The `Stream` struct wraps the FreeSWITCH stream handle for writing messages to the console.
 //   - The `Log` variable provides logging functionality via FreeSWITCH's logging API.
 //
 // Consumers (package main) implement the Module interface and call Register() from an
 // init() function; Go guarantees all package init() functions run at dlopen time, before
 // FreeSWITCH calls any exported entry point.
-package glue
+package freeswitch
 
 /*
-#include "glue.h"
+#include "freeswitch.h"
 */
 import "C"
 import (
@@ -102,6 +102,7 @@ func Register(m Module) {
 // It should return SWITCH_STATUS_SUCCESS on success, or an error status on failure.
 // Currently, due to a Go bug (https://github.com/golang/go/issues/11100), Go shared libraries cannot be unloaded,
 // so we return SWITCH_STATUS_NOUNLOAD to prevent FreeSWITCH from attempting to unload the module.
+//
 //export _ModuleLoad
 func _ModuleLoad(module_interface *C.switch_loadable_module_interface_t) C.switch_status_t {
 	if module != nil {
@@ -117,6 +118,7 @@ func _ModuleLoad(module_interface *C.switch_loadable_module_interface_t) C.switc
 // _ModuleRuntime is called by FreeSWITCH after the module has been loaded and is ready to run.
 // This function is typically used for long-running tasks or event loops.
 // It should return SWITCH_STATUS_TERM when the module is finished running.
+//
 //export _ModuleRuntime
 func _ModuleRuntime() C.switch_status_t {
 	if module != nil {
@@ -128,6 +130,7 @@ func _ModuleRuntime() C.switch_status_t {
 // _ModuleShutdown is called by FreeSWITCH when the module is being unloaded.
 // This function should be used to clean up any resources used by the module.
 // It should return SWITCH_STATUS_SUCCESS.
+//
 //export _ModuleShutdown
 func _ModuleShutdown() C.switch_status_t {
 	if module != nil {
@@ -141,6 +144,7 @@ func _ModuleShutdown() C.switch_status_t {
 // c_session: A pointer to the FreeSWITCH session, if the command was executed from within a call. Otherwise, it's NULL.
 // c_stream: A pointer to the FreeSWITCH stream handle, used for sending output back to the caller.
 // It should return SWITCH_STATUS_SUCCESS on success, or an error status on failure.
+//
 //export _ModuleApiHandler
 func _ModuleApiHandler(c_cmd *C.cchar_t, c_session *C.switch_core_session_t, c_stream *C.switch_stream_handle_t) C.switch_status_t {
 	if module == nil {
