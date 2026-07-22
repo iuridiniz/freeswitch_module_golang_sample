@@ -41,15 +41,9 @@ SWITCH_MODULE_RUNTIME_FUNCTION(_wrap_runtime)
 }
 
 /* Calling variadic C functions is not supported by cgo */
-void _log_on_channel(switch_log_level_t level, char *msg)
+void _log_on_channel(switch_log_level_t level, const char *file, const char *func, int line, char *msg)
 {
-    /*
-    FIXME: this will log always the same line, it must log go source line
-        see: https://pkg.go.dev/runtime#Caller
-             https://docs.freeswitch.org/group__log.html#ga8b2e27a937f0e0fef00d1eae3ddedd14
-
-    */
-    switch_log_printf(SWITCH_CHANNEL_LOG, level, msg);
+    switch_log_printf(SWITCH_CHANNEL_ID_LOG, file, func, line, NULL, level, "%s", msg);
 }
 
 /* Calling C function pointers is currently not supported by cgo */

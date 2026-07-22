@@ -3,11 +3,11 @@
 // and provides a basic API command handler.
 //
 // Interaction with FreeSWITCH:
-// - The module uses CGo to interface with FreeSWITCH's C API.
-// - Exported C functions (_ModuleLoad, _ModuleRuntime, _ModuleShutdown, _ModuleApiHandler)
-//   serve as entry points for FreeSWITCH to call into the Go module.
-// - The `Stream` struct wraps the FreeSWITCH stream handle for writing messages to the console.
-// - The `_Log` struct provides logging functionality via FreeSWITCH's logging API.
+//   - The module uses CGo to interface with FreeSWITCH's C API.
+//   - Exported C functions (_ModuleLoad, _ModuleRuntime, _ModuleShutdown, _ModuleApiHandler)
+//     serve as entry points for FreeSWITCH to call into the Go module.
+//   - The `Stream` struct wraps the FreeSWITCH stream handle for writing messages to the console.
+//   - The `_Log` struct provides logging functionality via FreeSWITCH's logging API.
 package main
 
 /*
@@ -16,6 +16,7 @@ package main
 import "C"
 import (
 	"fmt"
+	"runtime"
 	"unsafe"
 )
 
@@ -45,13 +46,31 @@ type _Log struct{}
 
 var Log = _Log{}
 
+// callerInfo returns the file, function name, and line number of the caller,
+// skip frames up the stack (skip=1 targets the direct caller of callerInfo's caller).
+func callerInfo(skip int) (file, fn string, line int) {
+	pc, file, line, ok := runtime.Caller(skip)
+	if !ok {
+		return "", "", 0
+	}
+	if f := runtime.FuncForPC(pc); f != nil {
+		fn = f.Name()
+	}
+	return file, fn, line
+}
+
 // Notice logs messages with the NOTICE severity level.
 func (_ _Log) Notice(format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
+	file, fn, line := callerInfo(2) // skip: callerInfo, Notice -> lands on the caller of Notice
 	c_msg := C.CString(msg)
+	c_file := C.CString(file)
+	c_func := C.CString(fn)
 	defer C.free(unsafe.Pointer(c_msg))
+	defer C.free(unsafe.Pointer(c_file))
+	defer C.free(unsafe.Pointer(c_func))
 
-	C._log_on_channel(C.SWITCH_LOG_NOTICE, c_msg)
+	C._log_on_channel(C.SWITCH_LOG_NOTICE, c_file, c_func, C.int(line), c_msg)
 }
 
 // _ModuleLoad is called by FreeSWITCH when the module is loaded.

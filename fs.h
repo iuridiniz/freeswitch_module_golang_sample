@@ -7,7 +7,7 @@
 
 typedef const char cchar_t;
 
-void _log_on_channel(switch_log_level_t level, char *msg);
+void _log_on_channel(switch_log_level_t level, const char *file, const char *func, int line, char *msg);
 void _stream_write_function(switch_stream_handle_t *stream, char *msg);
 
 #endif
