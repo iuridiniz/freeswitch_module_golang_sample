@@ -1,5 +1,5 @@
-#ifndef _FS_H
-#define _FS_H
+#ifndef _GLUE_H
+#define _GLUE_H
 
 #include <switch.h>
 
